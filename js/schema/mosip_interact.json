@@ -1,0 +1,32 @@
+{
+  "$id": "http://mosip.io/telemetry/interact",
+  "type": "object",
+  "required": ["eid", "ets", "mid", "tags", "edata"],
+  "allOf": [
+    {
+      "$ref": "http://mosip.io/telemetry/common"
+    },
+    {
+      "properties": {
+        "eid": {
+          "type": "string",
+          "enum": ["INTERACT"]
+        },
+        "edata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "subtype": {
+              "type": "string"
+            }
+        
+          },
+          "required": ["type","subtype"]
+        }
+      }
+    }
+  ]
+}

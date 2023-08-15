@@ -1,0 +1,34 @@
+{
+  "$id": "http://mosip.io/telemetry/error",
+  "type": "object",
+  "required": ["eid", "ets", "mid", "tags","edata"],
+  "allOf": [
+    {
+      "$ref": "http://mosip.io/telemetry/common"
+    },
+    {
+      "properties": {
+        "eid": {
+          "type": "string",
+          "enum": ["ERROR"]
+        },
+        "edata": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["errorId", "errorMessage", "stacktrace"],
+          "properties": {
+            "errorId": {
+              "type": "string"
+            },
+            "errorMessage": {
+              "type": "string"
+            },
+            "stacktrace": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

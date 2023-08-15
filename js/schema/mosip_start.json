@@ -1,0 +1,31 @@
+{
+  "$id": "http://mosip.io/telemetry/start",
+  "type": "object",
+  "required": ["eid", "ets", "mid", "tags", "edata"],
+  "allOf": [
+    {
+      "$ref": "http://mosip.io/telemetry/common"
+    },
+    {
+      "properties": {
+        "eid": {
+          "type": "string",
+          "enum": ["START"]
+        },
+        "edata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "duration": {
+              "type": "number"
+            }
+          },
+          "required": ["type", "duration"]
+        }
+      }
+    }
+  ]
+}

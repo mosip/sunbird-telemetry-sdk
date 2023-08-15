@@ -1,0 +1,28 @@
+{
+  "$id": "http://mosip.io/telemetry/impression",
+  "type": "object",
+  "required": ["eid", "ets", "mid", "tags", "edata"],
+  "allOf": [
+    {
+      "$ref": "http://mosip.io/telemetry/common"
+    },
+    {
+      "properties": {
+        "eid": {
+          "type": "string",
+          "enum": ["IMPRESSION"]
+        },
+        "edata": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          },
+          "required": ["type"]
+        }
+      }
+    }
+  ]
+}
