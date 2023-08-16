@@ -1,10 +1,3 @@
-/**
- * Telemetry V3 Library
- * @author Manjunath Davanam <manjunathd@ilimi.in>
- * @author Akash Gupta <Akash.Gupta@tarento.com> 
- */
-
-// To support for node server environment 
 if (typeof require === "function") {
     var Ajv = require('ajv')
 }
@@ -14,6 +7,10 @@ var libraryDispatcher = {
     this.telemetry.raiseEvent("TelemetryEvent", { detail: event });
   }
 };
+
+let getUTCTime =  function (){
+    return Date.parse(new Date().toUTCString())
+}
 
 const EventListener = function() {
     const events = {};
@@ -55,28 +52,28 @@ var Telemetry = (function() {
     this.dispatcher.dispatch = this.dispatcher.dispatch.bind(this);
   
     this._defaultValue = {
-            uid: "anonymous",
-            authtoken: "",
-            batchsize: 20,
-            host: "https://api.ekstep.in",
-            endpoint: "/data/v3/telemetry",
-            apislug: "/action",
-        },
-        this.telemetryEnvelop = {
-            "eid": "",
-            "ets": "",
-            "ver": "",
-            "mid": '',
-            "actor": {},
-            "context": {},
-            "object": {},
-            "tags": [],
-            "edata": ""
-        }
+        uid: "",
+        authtoken: "",
+        batchsize: 20,
+        host: "",
+        endpoint: "",
+        apislug: "",
+    },
+    this.telemetryEnvelop = {
+        "eid": "",
+        "ets": "",
+        "ver": "",
+        "mid": '',
+        "actor": {},
+        "context": {},
+        "object": {},
+        "tags": [],
+        "edata": ""
+    }
     this._globalContext = {
-        "channel": 'in.ekstep',
-        "pdata": { id: "in.ekstep", ver: "1.0", pid: "" },
-        "env": "contentplayer",
+        "channel": '',
+        "pdata": { id: "", ver: "", pid: "" },
+        "env": "",
         "sid": "",
         "did": "",
         "cdata": [],
@@ -106,7 +103,7 @@ var Telemetry = (function() {
      * @param  {object} options    [It can have `context, object, actor` can be explicitly passed in this event]
      */
     this.telemetry.start = function(config, contentId, contentVer, data, options) {
-        data.duration = data.duration || (((new Date()).getTime()) * 0.001); // Converting duration miliSeconds to seconds
+        data.duration = data.duration || (getUTCTime() * 0.001); // Converting duration miliSeconds to seconds
         if (contentId && contentVer) {
             telemetryInstance._globalObject.id = contentId;
             telemetryInstance._globalObject.ver = contentVer;
@@ -287,7 +284,7 @@ var Telemetry = (function() {
     this.telemetry.end = function(data, options) {
         if (telemetryInstance.startData.length) {
             var startEventObj = telemetryInstance.startData.pop();
-            data.duration = ((new Date()).getTime() - startEventObj.ets) * 0.001; // Converting duration miliSeconds to seconds
+            data.duration = (getUTCTime() - startEventObj.ets) * 0.001; // Converting duration miliSeconds to seconds
             instance.updateValues(options);
             instance._dispatch(instance.getEvent('END', data));
         } else {
@@ -316,17 +313,16 @@ var Telemetry = (function() {
      * @param  {object} object [Object value]
      */
     this.telemetry.resetObject = function(object) {
-            telemetryInstance._currentObject = object || {};
-        },
+        telemetryInstance._currentObject = object || {};
+    },
 
-        /**
-         * Which is used to reset the current actor value.
-         * @param  {object} object [Object value]
-         */
-        this.telemetry.resetActor = function(actor) {
-            telemetryInstance._currentActor = actor || {};
-        }
-
+    /**
+     * Which is used to reset the current actor value.
+     * @param  {object} object [Object value]
+     */
+    this.telemetry.resetActor = function(actor) {
+        telemetryInstance._currentActor = actor || {};
+    }
 
     /**
      * Which is used to reset the current actor value.
@@ -375,7 +371,11 @@ var Telemetry = (function() {
     instance._dispatch = function(message) {
         message.mid = message.eid + ':' + CryptoJS.MD5(JSON.stringify(message)).toString();
         if (telemetryInstance.enableValidation) {
-            var validate = ajv.getSchema('http://api.ekstep.org/telemetry/' + message.eid.toLowerCase())
+            var schemaBaseUrl = 'http://api.ekstep.org/telemetry/';
+            if(telemetry.config.schemaBaseUrl){
+                schemaBaseUrl = telemetry.config.schemaBaseUrl;
+            }
+            var validate = ajv.getSchema(schemaBaseUrl + message.eid.toLowerCase())
             var valid = validate(message)
             if (!valid) {
                 console.error('Invalid ' + message.eid + ' Event: ' + ajv.errorsText(validate.errors))
@@ -383,7 +383,7 @@ var Telemetry = (function() {
             }
         }
         if (telemetryInstance.runningEnv === 'client') {
-            if (!message.context.did) {
+            if (!message.context.did) { 
                 if (!Telemetry.fingerPrintId) {
                     Telemetry.getFingerPrint(function(result, components) {
                         message.context.did = result;
@@ -427,8 +427,7 @@ var Telemetry = (function() {
      */
     instance.getEvent = function(eventId, data) {
         telemetryInstance.telemetryEnvelop.eid = eventId;
-        // timeDiff (in sec) is diff of server date and local date 
-        telemetryInstance.telemetryEnvelop.ets = (new Date()).getTime() + ((Telemetry.config.timeDiff*1000) || 0);
+        telemetryInstance.telemetryEnvelop.ets = getUTCTime();
         telemetryInstance.telemetryEnvelop.ver = Telemetry._version;
         telemetryInstance.telemetryEnvelop.mid = '';
         telemetryInstance.telemetryEnvelop.actor = Object.assign({}, { "id": Telemetry.config.uid || 'anonymous', "type": 'User' }, instance.getUpdatedValue('actor'));
@@ -596,18 +595,6 @@ var Telemetry = (function() {
     return this.telemetry;
 })();
 
-/**
- * Name space which is being fallowed
- * @type {[type]}
- */
-
 EkTelemetry = $t = Telemetry;
 
-
-
-/**
- * To support for the node backEnd, So any node developer can import this telemetry lib.
- */
-if (typeof module != 'undefined') {
-    module.exports = Telemetry;
-}
+module.exports = Telemetry;

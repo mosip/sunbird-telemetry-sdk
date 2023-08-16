@@ -42,12 +42,12 @@ var TelemetrySyncManager = {
                 return;
             }
             telemetryObj = {
-                "id": "api.sunbird.telemetry",
+                "id": "api.mosip.telemetry",
                 "ver": Telemetry._version,
                 "params": {
                     "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
                 },
-                "ets": (new Date()).getTime() + ((Telemetry.config.timeDiff*1000) || 0),
+                "ets": getUTCTime(),
                 "events": telemetryEvents
             };
         }
