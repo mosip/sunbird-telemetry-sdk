@@ -24,7 +24,7 @@ module.exports = function(grunt) {
                     './core/telemetryV3Interface.js',
                     './core/telemetrySyncManager.js',
                 ],
-                dest: './dist/index.js'
+                dest: './index.js'
             }
         },
         uglify: {

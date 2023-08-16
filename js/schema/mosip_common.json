@@ -1,0 +1,31 @@
+{
+    "$id": "http://mosip.io/telemetry/common",
+    "type": "object",
+    "properties": {
+      "ets": {
+        "type": "number",
+        "format": "date-time"
+      },
+      "ver": {
+        "type": "string"
+      },
+      "mid": {
+        "type": "string",
+        "minLength": 1
+      },
+      "object": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      },
+      "actor": {
+        "$ref": "http://mosip.io/telemetry/actor"
+      },
+      "context": {
+        "$ref": "http://mosip.io/telemetry/context"
+      },
+      "tags": {
+        "$ref": "http://mosip.io/telemetry/tags"
+      }
+    }
+  }

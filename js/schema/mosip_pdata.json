@@ -1,0 +1,16 @@
+{
+  "$id": "http://mosip.io/telemetry/pdata",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "ver": {
+      "type": "string"
+    }, 
+    "pid": {
+      "type": "string"
+    }
+  },
+  "required": []
+}

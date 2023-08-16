@@ -1,0 +1,31 @@
+{
+  "$id": "http://mosip.io/telemetry/context",
+  "type": "object",
+  "properties": {
+    "channel": {
+      "type": "string"
+    },
+    "pdata": {
+      "$ref": "http://mosip.io/telemetry/pdata"
+    },
+    "env": {
+      "type": "string"
+    },
+    "sid": {
+      "type": "string"
+    },
+    "did": {
+      "type": "string"
+    },
+    "cdata": {
+      "type": "array",
+      "items": {}
+    },
+    "rollup": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  "required": ["env", "sid", "did"]
+}

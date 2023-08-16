@@ -15,7 +15,7 @@
         "grunt-contrib-clean": "*",
         "grunt-contrib-copy": "*",
         "grunt-contrib-uglify": "^0.9.1",
-        "gulp": "^3.9.1",
+        "gulp": "^4.0.0",
         "grunt-contrib-concat": "1.0.1",
         "karma": "^0.13.22",
         "karma-chrome-launcher": "^1.0.1",
@@ -36,7 +36,7 @@
         "test": "karma start karma.renderer.config.js",
         "codecov": "codecov",
         "test-sdk": "grunt renderer-telemetryV3",
-        "build": "node_modules/.bin/rimraf ./dist && gulp build-telemetry-schema && grunt build-telemetry-lib && node_modules/.bin/cpy package.json ./dist && node_modules/.bin/cpy README.md ./dist"
+        "build": "node_modules/.bin/rimraf ./dist && gulp build-telemetry-schema && grunt build-telemetry-lib"
     },
     "repository": {
         "type": "git",

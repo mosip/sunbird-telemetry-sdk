@@ -1,0 +1,13 @@
+{
+  "$id": "http://mosip.io/telemetry/actor",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string"
+    }
+  },
+  "required": [ "type", "id"]
+}
