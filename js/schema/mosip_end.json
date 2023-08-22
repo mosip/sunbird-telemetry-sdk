@@ -18,9 +18,12 @@
           "properties": {
             "type": {
               "type": "string"
+            },
+            "duration": {
+              "type": "number"
             }
           },
-          "required": ["type"]
+          "required": ["type", "duration"]
         }
       }
     }
