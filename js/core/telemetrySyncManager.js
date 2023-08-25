@@ -42,13 +42,15 @@ var TelemetrySyncManager = {
                 return;
             }
             telemetryObj = {
-                "id": "api.mosip.telemetry",
-                "ver": Telemetry._version,
-                "params": {
-                    "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
-                },
-                "ets": getUTCTime(),
-                "events": telemetryEvents
+                "data": {
+                    "id": "api.mosip.telemetry",
+                    "ver": Telemetry._version,
+                    "params": {
+                        "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
+                    },
+                    "ets": getUTCTime(),
+                    "events": telemetryEvents
+                }
             };
         }
         var headersParam = {};

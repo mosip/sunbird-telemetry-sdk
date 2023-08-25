@@ -1,26 +1,19 @@
 {
   "$id": "http://mosip.io/telemetry/tags",
-  "type": "array",
-  "items": {
-    "type": "object",
-    "properties": {
-      "osName": {
-        "type": "string",
-        "minLength": 1
-      },
-      "osVersion": {
-        "type": "string",
-        "minLength": 1
-      },
-      "injiVersion": {
-        "type": "string",
-        "minLength": 1
-      },
-      "tuvaliVersion": {
-        "type": "string",
-        "minLength": 1
-      }
+  "type": "object",
+  "properties": {
+    "injiVersion": {
+      "type": "string",
+      "minLength": 1
     },
-    "required": ["osName", "osVersion", "injiVersion", "tuvaliVersion"]
-  }
+    "tuvaliVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "buildNumber": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["injiVersion", "tuvaliVersion", "buildNumber"]
 }

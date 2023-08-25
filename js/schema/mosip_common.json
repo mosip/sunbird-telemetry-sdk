@@ -26,6 +26,9 @@
       },
       "tags": {
         "$ref": "http://mosip.io/telemetry/tags"
+      }, 
+      "deviceInformation": {
+        "$ref": "http://mosip.io/telemetry/device_information"
       }
     }
   }

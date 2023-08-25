@@ -67,7 +67,8 @@ var Telemetry = (function() {
         "actor": {},
         "context": {},
         "object": {},
-        "tags": [],
+        "deviceInformation": {},
+        "tags": {},
         "edata": ""
     }
     this._globalContext = {
@@ -433,7 +434,8 @@ var Telemetry = (function() {
         telemetryInstance.telemetryEnvelop.actor = Object.assign({}, { "id": Telemetry.config.uid || 'anonymous', "type": 'User' }, instance.getUpdatedValue('actor'));
         telemetryInstance.telemetryEnvelop.context = Object.assign({}, instance.getGlobalContext(), instance.getUpdatedValue('context'));
         telemetryInstance.telemetryEnvelop.object = Object.assign({}, instance.getGlobalObject(), instance.getUpdatedValue('object'));
-        telemetryInstance.telemetryEnvelop.tags = Object.assign([], Telemetry.config.tags, instance.getUpdatedValue('tags'));
+        telemetryInstance.telemetryEnvelop.tags = Object.assign({}, Telemetry.config.tags, instance.getUpdatedValue('tags'));
+        telemetryInstance.telemetryEnvelop.deviceInformation = Object.assign({}, Telemetry.config.deviceInformation, instance.getUpdatedValue('deviceInformation'));
         telemetryInstance.telemetryEnvelop.edata = data;
         return telemetryInstance.telemetryEnvelop;
     }
