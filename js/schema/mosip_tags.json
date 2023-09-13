@@ -2,6 +2,10 @@
   "$id": "http://mosip.io/telemetry/tags",
   "type": "object",
   "properties": {
+    "env": {
+      "type": "string",
+      "minLength": 1
+    },
     "injiVersion": {
       "type": "string",
       "minLength": 1
@@ -13,7 +17,11 @@
     "buildNumber": {
       "type": "string",
       "minLength": 1
+    },
+    "preferredLanguage": {
+      "type": "string",
+      "minLength": 1
     }
   },
-  "required": ["injiVersion", "tuvaliVersion", "buildNumber"]
+  "required": ["injiVersion", "tuvaliVersion", "buildNumber", "preferredLanguage"]
 }

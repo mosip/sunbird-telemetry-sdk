@@ -1,7 +1,7 @@
 {
   "$id": "http://mosip.io/telemetry/start",
   "type": "object",
-  "required": ["eid", "ets", "mid", "tags", "edata"],
+  "required": ["eid", "ets", "mid", "sid", "appid", "edata"],
   "allOf": [
     {
       "$ref": "http://mosip.io/telemetry/common"
@@ -15,15 +15,11 @@
         "edata": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {
-            "type": {
-              "type": "string"
-            },
-            "duration": {
-              "type": "number"
+          "allOf": [
+            {
+            "$ref": "http://mosip.io/telemetry/edata_common"
             }
-          },
-          "required": ["type", "duration"]
+          ]
         }
       }
     }

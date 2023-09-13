@@ -1,7 +1,7 @@
 {
   "$id": "http://mosip.io/telemetry/error",
   "type": "object",
-  "required": ["eid", "ets", "mid", "tags","edata"],
+  "required": ["eid", "ets", "mid", "sid", "appid", "edata"],
   "allOf": [
     {
       "$ref": "http://mosip.io/telemetry/common"
@@ -16,17 +16,30 @@
           "type": "object",
           "additionalProperties": false,
           "required": ["errorId", "errorMessage", "stacktrace"],
-          "properties": {
-            "errorId": {
-              "type": "string"
+          "allOf": [
+            {
+              "$ref": "http://mosip.io/telemetry/edata_common"
             },
-            "errorMessage": {
-              "type": "string"
+            {
+              "$ref": "http://mosip.io/telemetry/device_information"
             },
-            "stacktrace": {
-              "type": "string"
+            {
+              "$ref": "http://mosip.io/telemetry/tags"
+            }, 
+            {
+              "properties": {
+                "errorId": {
+                  "type": "string"
+                },
+                "errorMessage": {
+                  "type": "string"
+                },
+                "stacktrace": {
+                  "type": "string"
+                }
+              }
             }
-          }
+          ]
         }
       }
     }

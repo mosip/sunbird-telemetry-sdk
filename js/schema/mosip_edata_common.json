@@ -1,0 +1,13 @@
+{
+  "$id": "http://mosip.io/telemetry/edata_common",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "additionalParameters": {
+      "type": "object"
+    }
+  },
+  "required": ["type"]
+}
