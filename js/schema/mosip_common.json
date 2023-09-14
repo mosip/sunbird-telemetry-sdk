@@ -1,22 +1,30 @@
 {
   "$id": "http://mosip.io/telemetry/common",
   "type": "object",
-  "properties": {
-    "ets": {
-      "type": "number",
-      "format": "date-time"
+  "required": ["ets", "mid", "sid", "appid", "actor"],
+  "allOf": [
+    {
+      "$ref": "http://mosip.io/telemetry/actor"
     },
-    "mid": {
-      "type": "string",
-      "minLength": 1
-    },
-    "sid": {
-      "type": "string",
-      "minLength": 1
-    },
-    "appid": {
-      "type": "string",
-      "minLength": 1
+    {
+      "properties": {
+        "ets": {
+          "type": "number",
+          "format": "date-time"
+        },
+        "mid": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sid": {
+          "type": "string",
+          "minLength": 1
+        },
+        "appid": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
     }
-  }
+  ]
 }

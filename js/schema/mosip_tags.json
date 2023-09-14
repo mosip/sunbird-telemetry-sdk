@@ -19,9 +19,14 @@
       "minLength": 1
     },
     "preferredLanguage": {
-      "type": "string",
-      "minLength": 1
+      "type": "string"
     }
   },
-  "required": ["injiVersion", "tuvaliVersion", "buildNumber", "preferredLanguage"]
+  "required": [
+    "injiVersion",
+    "tuvaliVersion",
+    "buildNumber",
+    "preferredLanguage",
+    "env"
+  ]
 }

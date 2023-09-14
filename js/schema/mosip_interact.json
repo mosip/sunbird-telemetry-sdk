@@ -15,19 +15,15 @@
         "edata": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["subtype"],
-          "allOf": [
-            {
-            "$ref": "http://mosip.io/telemetry/edata_common"
+          "required": ["type", "subtype"],
+          "properties": {
+            "type": {
+              "type": "string"
             },
-            {
-              "properties": {
-                "subtype": {
-                  "type": "string"
-                }
-              }
+            "subtype": {
+              "type": "string"
             }
-          ]
+          }
         }
       }
     }

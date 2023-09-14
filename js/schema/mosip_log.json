@@ -9,7 +9,7 @@
     {
       "properties": {
         "eid": {
-          "$id": "http://mosip.io/telemetry/eid",
+          "type": "string",
           "enum": ["LOG"]
         },
         "edata": {

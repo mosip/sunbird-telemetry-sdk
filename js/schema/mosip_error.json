@@ -16,18 +16,12 @@
           "type": "object",
           "additionalProperties": false,
           "required": ["errorId", "errorMessage", "stacktrace"],
-          "allOf": [
-            {
-              "$ref": "http://mosip.io/telemetry/edata_common"
-            },
-            {
-              "$ref": "http://mosip.io/telemetry/device_information"
-            },
-            {
-              "$ref": "http://mosip.io/telemetry/tags"
-            }, 
+          "allOf": [ 
             {
               "properties": {
+                "type": {
+                  "type": "string"
+                },
                 "errorId": {
                   "type": "string"
                 },
@@ -36,6 +30,60 @@
                 },
                 "stacktrace": {
                   "type": "string"
+                },
+                "env": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "injiVersion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "tuvaliVersion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "buildNumber": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "preferredLanguage": {
+                  "type": "string"
+                },
+                "brandName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "modelName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "osName": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "osVersion": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "osApiLevel": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "isHardwareKeystoreSupported": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "dateTime": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "zone": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "offset": {
+                  "type": "number"
                 }
               }
             }
