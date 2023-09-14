@@ -45,7 +45,6 @@ var Telemetry = (function() {
     var telemetryInstance = this;
     this.telemetry.initialized = false;
     this.telemetry.config = {};
-    this.telemetry._version = "3.0";
     this.telemetry.fingerPrintId = undefined;
     EventListener.call(this);
     this.dispatcher = libraryDispatcher;
@@ -62,13 +61,10 @@ var Telemetry = (function() {
     this.telemetryEnvelop = {
         "eid": "",
         "ets": "",
-        "ver": "",
         "mid": '',
+        "sid": "",
+        "appid":"",
         "actor": {},
-        "context": {},
-        "object": {},
-        "deviceInformation": {},
-        "tags": {},
         "edata": ""
     }
     this._globalContext = {
@@ -77,10 +73,11 @@ var Telemetry = (function() {
         "env": "",
         "sid": "",
         "did": "",
+        "appid":"",
         "cdata": [],
         "rollup": {}
     };
-    this.runningEnv = 'client';
+    //this.runningEnv = 'client';
     this.enableValidation = false;
     this._globalObject = {};
     this.startData = [];
@@ -104,7 +101,7 @@ var Telemetry = (function() {
      * @param  {object} options    [It can have `context, object, actor` can be explicitly passed in this event]
      */
     this.telemetry.start = function(config, contentId, contentVer, data, options) {
-        data.duration = data.duration || (getUTCTime() * 0.001); // Converting duration miliSeconds to seconds
+        //data.duration = data.duration || (getUTCTime() * 0.001); // Converting duration miliSeconds to seconds
         if (contentId && contentVer) {
             telemetryInstance._globalObject.id = contentId;
             telemetryInstance._globalObject.ver = contentVer;
@@ -277,6 +274,11 @@ var Telemetry = (function() {
         instance._dispatch(instance.getEvent('SUMMARY', data));
     }
 
+    this.telemetry.appinfo = function(data, options) {
+        instance.updateValues(options);
+        instance._dispatch(instance.getEvent('APPINFO', data));
+    }
+
     /**
      * Which is used to log the end telemetry event.
      * @param  {object} data       [data which is need to pass in this event ex: {"type":"player","mode":"ContentPlayer","pageid":"splash"}]
@@ -429,13 +431,9 @@ var Telemetry = (function() {
     instance.getEvent = function(eventId, data) {
         telemetryInstance.telemetryEnvelop.eid = eventId;
         telemetryInstance.telemetryEnvelop.ets = getUTCTime();
-        telemetryInstance.telemetryEnvelop.ver = Telemetry._version;
         telemetryInstance.telemetryEnvelop.mid = '';
-        telemetryInstance.telemetryEnvelop.actor = Object.assign({}, { "id": Telemetry.config.uid || 'anonymous', "type": 'User' }, instance.getUpdatedValue('actor'));
-        telemetryInstance.telemetryEnvelop.context = Object.assign({}, instance.getGlobalContext(), instance.getUpdatedValue('context'));
-        telemetryInstance.telemetryEnvelop.object = Object.assign({}, instance.getGlobalObject(), instance.getUpdatedValue('object'));
-        telemetryInstance.telemetryEnvelop.tags = Object.assign({}, Telemetry.config.tags, instance.getUpdatedValue('tags'));
-        telemetryInstance.telemetryEnvelop.deviceInformation = Object.assign({}, Telemetry.config.deviceInformation, instance.getUpdatedValue('deviceInformation'));
+        telemetryInstance.telemetryEnvelop.sid = Telemetry.config.sid;
+        telemetryInstance.telemetryEnvelop.appid = Telemetry.config.appid;
         telemetryInstance.telemetryEnvelop.edata = data;
         return telemetryInstance.telemetryEnvelop;
     }
@@ -451,10 +449,9 @@ var Telemetry = (function() {
         config.rollup && (telemetryInstance._globalContext.rollup = config.rollup);
         config.sid && (telemetryInstance._globalContext.sid = config.sid);
         config.did && (telemetryInstance._globalContext.did = config.did);
+        config.appid && (telemetryInstance._globalContext.appid = config.appid);
         config.cdata && (telemetryInstance._globalContext.cdata = config.cdata);
         config.pdata && (telemetryInstance._globalContext.pdata = config.pdata);
-
-
     }
 
     /**
