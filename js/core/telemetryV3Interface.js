@@ -45,7 +45,6 @@ var Telemetry = (function() {
     var telemetryInstance = this;
     this.telemetry.initialized = false;
     this.telemetry.config = {};
-    this.telemetry.fingerPrintId = undefined;
     EventListener.call(this);
     this.dispatcher = libraryDispatcher;
     this.dispatcher.dispatch = this.dispatcher.dispatch.bind(this);
@@ -385,27 +384,7 @@ var Telemetry = (function() {
                 return
             }
         }
-        if (telemetryInstance.runningEnv === 'client') {
-            if (!message.context.did) { 
-                if (!Telemetry.fingerPrintId) {
-                    Telemetry.getFingerPrint(function(result, components) {
-                        message.context.did = result;
-                        message.actor.id = instance.getActorId(message.actor.id, result);
-                        Telemetry.fingerPrintId = result;
-                        dispatcher.dispatch(message);
-                    })
-                } else {
-                    message.context.did = Telemetry.fingerPrintId;
-                    message.actor.id = instance.getActorId(message.actor.id, Telemetry.fingerPrintId);
-                    dispatcher.dispatch(message);
-                }
-            } else {
-                message.actor.id = instance.getActorId(message.actor.id, message.context.did);
-                dispatcher.dispatch(message);
-            }
-        } else {
-            dispatcher.dispatch(message);
-        }
+        dispatcher.dispatch(message);   
     }
 
     /**
@@ -533,60 +512,7 @@ var Telemetry = (function() {
             return target;
         }
     }
-    var FPoptions = {
-        audio: {
-            timeout: 1000,
-            // On iOS 11, audio context can only be used in response to user interaction.
-            // We require users to explicitly enable audio fingerprinting on iOS 11.
-            // See https://stackoverflow.com/questions/46363048/onaudioprocess-not-called-on-ios11#46534088
-            excludeIOS11: true
-        },
-        fonts: {
-            swfContainerId: 'fingerprintjs2',
-            swfPath: 'flash/compiled/FontList.swf',
-            userDefinedFonts: [],
-            extendedJsFonts: false
-        },
-        screen: {
-            // To ensure consistent fingerprints when users rotate their mobile devices
-            detectScreenOrientation: true
-        },
-        plugins: {
-            sortPluginsFor: [/palemoon/i],
-            excludeIE: false
-        },
-        extraComponents: [],
-        excludes: {
-            // Unreliable on Windows, see https://github.com/Valve/fingerprintjs2/issues/375
-            'enumerateDevices': true,
-            // devicePixelRatio depends on browser zoom, and it's impossible to detect browser zoom
-            'pixelRatio': true,
-            // DNT depends on incognito mode for some browsers (Chrome) and it's impossible to detect incognito mode
-            'doNotTrack': true,
-            // uses js fonts already
-            'fontsFlash': true,
-            'screenResolution': true,
-            'availableScreenResolution': true
-        },
-        NOT_AVAILABLE: 'not available',
-        ERROR: 'error',
-        EXCLUDED: 'excluded'
-    }
-    this.telemetry.getFingerPrint = function (cb) {
-        const ver = 'v1';
-        if (localStorage && localStorage.getItem(`fpDetails_${ver}`)) {
-            var deviceDetails = JSON.parse(localStorage.getItem(`fpDetails_${ver}`));
-             if (cb) cb(deviceDetails.result, deviceDetails.components, ver);
-          } else {
-            Fingerprint2.getV18(FPoptions, function (result, components) {
-                if (localStorage) {
-                    // fpDetails contains components and deviceId generated from fingerprintJs
-                    localStorage.setItem(`fpDetails_${ver}`, JSON.stringify({result: result, components: components}))
-                }
-            if (cb) cb(result, components, ver)
-            })
-          } 
-    }
+
     if (typeof Object.assign != 'function') {
         instance.objectAssign();
     }

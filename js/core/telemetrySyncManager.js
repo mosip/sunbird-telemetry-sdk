@@ -58,9 +58,6 @@ var TelemetrySyncManager = {
         var fullPath = Telemetry.config.host + Telemetry.config.apislug + Telemetry.config.endpoint;
         headersParam['dataType'] = 'json';
         headersParam["Content-Type"] = "application/json";
-        //headersParam['x-app-id'] = Telemetry.config.pdata.id;
-       // headersParam['x-device-id'] = Telemetry.fingerPrintId;
-        //headersParam['x-channel-id'] = Telemetry.config.channel; 
 
         axios.post(
             fullPath,
