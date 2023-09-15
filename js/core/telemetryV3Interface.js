@@ -60,7 +60,6 @@ var Telemetry = (function() {
     this.telemetryEnvelop = {
         "eid": "",
         "ets": "",
-        "mid": '',
         "sid": "",
         "appid":"",
         "actor": {},
@@ -371,7 +370,6 @@ var Telemetry = (function() {
      * @param  {object} message [Telemetry event object]
      */
     instance._dispatch = function(message) {
-        message.mid = message.eid + ':' + CryptoJS.MD5(JSON.stringify(message)).toString();
         if (telemetryInstance.enableValidation) {
             var schemaBaseUrl = 'http://api.ekstep.org/telemetry/';
             if(telemetry.config.schemaBaseUrl){
@@ -410,7 +408,6 @@ var Telemetry = (function() {
     instance.getEvent = function(eventId, data) {
         telemetryInstance.telemetryEnvelop.eid = eventId;
         telemetryInstance.telemetryEnvelop.ets = getUTCTime();
-        telemetryInstance.telemetryEnvelop.mid = '';
         telemetryInstance.telemetryEnvelop.sid = Telemetry.config.sid;
         telemetryInstance.telemetryEnvelop.appid = Telemetry.config.appid;
         telemetryInstance.telemetryEnvelop.edata = data;
