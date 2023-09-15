@@ -1,7 +1,7 @@
 {
   "$id": "http://mosip.io/telemetry/error",
   "type": "object",
-  "required": ["eid", "ets", "sid", "appid", "edata"],
+  "required": ["eid", "edata"],
   "allOf": [
     {
       "$ref": "http://mosip.io/telemetry/common"
