@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 
-gulp.task('build-telemetry-schema', function() {
+gulp.task('build-telemetry-schema', async function() {
     var fs = require('fs');
     var specFile = './schema/telemetry-spec.js';
     var schemas = [];

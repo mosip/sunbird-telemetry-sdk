@@ -1,0 +1,40 @@
+{
+  "$id": "http://mosip.io/telemetry/log",
+  "type": "object",
+  "required": ["eid", "edata"],
+  "allOf": [
+    {
+      "$ref": "http://mosip.io/telemetry/common"
+    },
+    {
+      "properties": {
+        "eid": {
+          "type": "string",
+          "enum": ["LOG"]
+        },
+        "edata": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["type", "level", "message"],
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "level": {
+              "type": "string"
+            },
+            "message": {
+              "type": "string"
+            },
+            "additionalParameters": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

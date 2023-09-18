@@ -4,6 +4,7 @@
  * @author Manjunath Davanam <manjunathd@ilimi.in>
  * @author Krushanu Mohapatra <Krushanu.Mohapatra@tarento.com>
  */
+import { default as axios } from 'axios';
 
 var TelemetrySyncManager = {
 
@@ -21,7 +22,7 @@ var TelemetrySyncManager = {
         var Telemetry = EkTelemetry || Telemetry;
         Telemetry.config.syncRetryInterval && (instance._syncRetryInterval = Telemetry.config.syncRetryInterval);
         Telemetry.config.failedBatchSize && (instance._failedBatchSize = Telemetry.config.failedBatchSize);
-        document.addEventListener('TelemetryEvent', this.sendTelemetry);
+        Telemetry.addEventListener('TelemetryEvent', this.sendTelemetry);
     },
     sendTelemetry: function(event) {
         var telemetryEvent = event.detail;
@@ -41,39 +42,39 @@ var TelemetrySyncManager = {
                 return;
             }
             telemetryObj = {
-                "id": "api.sunbird.telemetry",
-                "ver": Telemetry._version,
-                "params": {
-                    "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
-                },
-                "ets": (new Date()).getTime() + ((Telemetry.config.timeDiff*1000) || 0),
-                "events": telemetryEvents
+                "data": {
+                    "id": "api.mosip.telemetry",
+                    "params": {
+                        "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
+                    },
+                    "ets": getUTCTime(),
+                    "events": telemetryEvents
+                }
             };
         }
         var headersParam = {};
-        if ('undefined' != typeof Telemetry.config.authtoken)
-            headersParam["Authorization"] = 'Bearer ' + Telemetry.config.authtoken;
+        /* if ('undefined' != typeof Telemetry.config.authtoken)
+            headersParam["Authorization"] = 'Bearer ' + Telemetry.config.authtoken; */
         var fullPath = Telemetry.config.host + Telemetry.config.apislug + Telemetry.config.endpoint;
         headersParam['dataType'] = 'json';
         headersParam["Content-Type"] = "application/json";
-        headersParam['x-app-id'] = Telemetry.config.pdata.id;
-        headersParam['x-device-id'] = Telemetry.fingerPrintId;
-        headersParam['x-channel-id'] = Telemetry.config.channel;
-        jQuery.ajax({
-            url: fullPath,
-            type: "POST",
-            headers: headersParam,
-            data: JSON.stringify(telemetryObj)
-        }).done(function(resp) {
-            Telemetry.config.telemetryDebugEnabled && console.log("Telemetry API success", resp);
-        }).fail(function(error, textStatus, errorThrown) {
+
+        axios.post(
+            fullPath,
+            JSON.stringify(telemetryObj),
+            {headers: headersParam}
+        )
+        .then((result) => {
+            Telemetry.config.telemetryDebugEnabled && console.log("Telemetry API success", result);
+        })
+        .catch((error) => {
             if(instance._failedBatchSize > instance._failedBatch.length){
                 instance._failedBatch.push(telemetryObj);
             }
             if (error.status == 403) {
-                console.error("Authentication error: ", error);
+                console.error("Authentication error: ", JSON.stringify(error));
             } else {
-                console.log("Error while Telemetry sync to server: ", error);
+                console.log("Error while Telemetry sync to server: ", JSON.stringify(error));
             }
         });
     },
@@ -87,9 +88,8 @@ var TelemetrySyncManager = {
         instance.syncEvents(telemetryObj);
     }
 }
-if (typeof document != 'undefined') {
-    TelemetrySyncManager.init();
-    setInterval(function(){
-        TelemetrySyncManager.syncFailedBatch();
-    }, TelemetrySyncManager._syncRetryInterval)
-}
+
+TelemetrySyncManager.init();
+setInterval(function(){
+    TelemetrySyncManager.syncFailedBatch();
+}, TelemetrySyncManager._syncRetryInterval)

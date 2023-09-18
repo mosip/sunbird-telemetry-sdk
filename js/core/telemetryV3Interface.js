@@ -1,27 +1,43 @@
-/**
- * Telemetry V3 Library
- * @author Manjunath Davanam <manjunathd@ilimi.in>
- * @author Akash Gupta <Akash.Gupta@tarento.com> 
- */
-
-// To support for node server environment 
 if (typeof require === "function") {
     var Ajv = require('ajv')
 }
 
-
 var libraryDispatcher = {
-    dispatch: function(event) {
-        if (typeof document != 'undefined') {
-            //To Support for external user who ever lisenting on this 'TelemetryEvent' event.
-            // IT  WORKS ONLY FOR CLIENT SIDE
-            document.dispatchEvent(new CustomEvent('TelemetryEvent', { detail: event }));
-        } else {
-            console.info("Library dispatcher supports only for client side.");
-        }
-    }
+  dispatch: function (event) {
+    this.telemetry.raiseEvent("TelemetryEvent", { detail: event });
+  }
 };
 
+let getUTCTime =  function (){
+    return Date.parse(new Date().toUTCString())
+}
+
+const EventListener = function() {
+    const events = {};
+  
+    //listens to the event
+    var  raiseEvent=  function (eventName, handler) {
+        var currentEvents = events[eventName];
+        if (!currentEvents) return;
+    
+        for (var i = 0; i < currentEvents.length; i++) {
+          if (typeof currentEvents[i] == "function") {
+            currentEvents[i](handler);
+          }
+        }
+      }
+    
+     //dispatching event
+    var addEventListener =  function (eventName, handler) {
+        if (!(eventName in events)){ 
+            events[eventName] = [];
+        }
+        events[eventName].push(handler);
+      }
+
+    this.telemetry.raiseEvent = raiseEvent;
+    this.telemetry.addEventListener = addEventListener;
+  }
 
 var Telemetry = (function() {
     this.telemetry = function() {};
@@ -29,38 +45,38 @@ var Telemetry = (function() {
     var telemetryInstance = this;
     this.telemetry.initialized = false;
     this.telemetry.config = {};
-    this.telemetry._version = "3.0";
-    this.telemetry.fingerPrintId = undefined;
+    EventListener.call(this);
     this.dispatcher = libraryDispatcher;
+    this.dispatcher.dispatch = this.dispatcher.dispatch.bind(this);
+  
     this._defaultValue = {
-            uid: "anonymous",
-            authtoken: "",
-            batchsize: 20,
-            host: "https://api.ekstep.in",
-            endpoint: "/data/v3/telemetry",
-            apislug: "/action",
-        },
-        this.telemetryEnvelop = {
-            "eid": "",
-            "ets": "",
-            "ver": "",
-            "mid": '',
-            "actor": {},
-            "context": {},
-            "object": {},
-            "tags": [],
-            "edata": ""
-        }
+        uid: "",
+        authtoken: "",
+        batchsize: 20,
+        host: "",
+        endpoint: "",
+        apislug: "",
+    },
+    this.telemetryEnvelop = {
+        "eid": "",
+        "ets": "",
+        "mid": "",
+        "sid": "",
+        "appid":"",
+        "actor": {},
+        "edata": ""
+    }
     this._globalContext = {
-        "channel": 'in.ekstep',
-        "pdata": { id: "in.ekstep", ver: "1.0", pid: "" },
-        "env": "contentplayer",
+        "channel": '',
+        "pdata": { id: "", ver: "", pid: "" },
+        "env": "",
         "sid": "",
         "did": "",
+        "appid":"",
         "cdata": [],
         "rollup": {}
     };
-    this.runningEnv = 'client';
+    //this.runningEnv = 'client';
     this.enableValidation = false;
     this._globalObject = {};
     this.startData = [];
@@ -84,7 +100,7 @@ var Telemetry = (function() {
      * @param  {object} options    [It can have `context, object, actor` can be explicitly passed in this event]
      */
     this.telemetry.start = function(config, contentId, contentVer, data, options) {
-        data.duration = data.duration || (((new Date()).getTime()) * 0.001); // Converting duration miliSeconds to seconds
+        //data.duration = data.duration || (getUTCTime() * 0.001); // Converting duration miliSeconds to seconds
         if (contentId && contentVer) {
             telemetryInstance._globalObject.id = contentId;
             telemetryInstance._globalObject.ver = contentVer;
@@ -257,6 +273,11 @@ var Telemetry = (function() {
         instance._dispatch(instance.getEvent('SUMMARY', data));
     }
 
+    this.telemetry.appinfo = function(data, options) {
+        instance.updateValues(options);
+        instance._dispatch(instance.getEvent('APPINFO', data));
+    }
+
     /**
      * Which is used to log the end telemetry event.
      * @param  {object} data       [data which is need to pass in this event ex: {"type":"player","mode":"ContentPlayer","pageid":"splash"}]
@@ -265,7 +286,7 @@ var Telemetry = (function() {
     this.telemetry.end = function(data, options) {
         if (telemetryInstance.startData.length) {
             var startEventObj = telemetryInstance.startData.pop();
-            data.duration = ((new Date()).getTime() - startEventObj.ets) * 0.001; // Converting duration miliSeconds to seconds
+            data.duration = (getUTCTime() - startEventObj.ets) * 0.001; // Converting duration miliSeconds to seconds
             instance.updateValues(options);
             instance._dispatch(instance.getEvent('END', data));
         } else {
@@ -294,17 +315,16 @@ var Telemetry = (function() {
      * @param  {object} object [Object value]
      */
     this.telemetry.resetObject = function(object) {
-            telemetryInstance._currentObject = object || {};
-        },
+        telemetryInstance._currentObject = object || {};
+    },
 
-        /**
-         * Which is used to reset the current actor value.
-         * @param  {object} object [Object value]
-         */
-        this.telemetry.resetActor = function(actor) {
-            telemetryInstance._currentActor = actor || {};
-        }
-
+    /**
+     * Which is used to reset the current actor value.
+     * @param  {object} object [Object value]
+     */
+    this.telemetry.resetActor = function(actor) {
+        telemetryInstance._currentActor = actor || {};
+    }
 
     /**
      * Which is used to reset the current actor value.
@@ -353,34 +373,18 @@ var Telemetry = (function() {
     instance._dispatch = function(message) {
         message.mid = message.eid + ':' + CryptoJS.MD5(JSON.stringify(message)).toString();
         if (telemetryInstance.enableValidation) {
-            var validate = ajv.getSchema('http://api.ekstep.org/telemetry/' + message.eid.toLowerCase())
+            var schemaBaseUrl = 'http://api.ekstep.org/telemetry/';
+            if(telemetry.config.schemaBaseUrl){
+                schemaBaseUrl = telemetry.config.schemaBaseUrl;
+            }
+            var validate = ajv.getSchema(schemaBaseUrl + message.eid.toLowerCase())
             var valid = validate(message)
             if (!valid) {
                 console.error('Invalid ' + message.eid + ' Event: ' + ajv.errorsText(validate.errors))
                 return
             }
         }
-        if (telemetryInstance.runningEnv === 'client') {
-            if (!message.context.did) {
-                if (!Telemetry.fingerPrintId) {
-                    Telemetry.getFingerPrint(function(result, components) {
-                        message.context.did = result;
-                        message.actor.id = instance.getActorId(message.actor.id, result);
-                        Telemetry.fingerPrintId = result;
-                        dispatcher.dispatch(message);
-                    })
-                } else {
-                    message.context.did = Telemetry.fingerPrintId;
-                    message.actor.id = instance.getActorId(message.actor.id, Telemetry.fingerPrintId);
-                    dispatcher.dispatch(message);
-                }
-            } else {
-                message.actor.id = instance.getActorId(message.actor.id, message.context.did);
-                dispatcher.dispatch(message);
-            }
-        } else {
-            dispatcher.dispatch(message);
-        }
+        dispatcher.dispatch(message);   
     }
 
     /**
@@ -405,14 +409,10 @@ var Telemetry = (function() {
      */
     instance.getEvent = function(eventId, data) {
         telemetryInstance.telemetryEnvelop.eid = eventId;
-        // timeDiff (in sec) is diff of server date and local date 
-        telemetryInstance.telemetryEnvelop.ets = (new Date()).getTime() + ((Telemetry.config.timeDiff*1000) || 0);
-        telemetryInstance.telemetryEnvelop.ver = Telemetry._version;
+        telemetryInstance.telemetryEnvelop.ets = getUTCTime();
+        telemetryInstance.telemetryEnvelop.sid = Telemetry.config.sid;
         telemetryInstance.telemetryEnvelop.mid = '';
-        telemetryInstance.telemetryEnvelop.actor = Object.assign({}, { "id": Telemetry.config.uid || 'anonymous', "type": 'User' }, instance.getUpdatedValue('actor'));
-        telemetryInstance.telemetryEnvelop.context = Object.assign({}, instance.getGlobalContext(), instance.getUpdatedValue('context'));
-        telemetryInstance.telemetryEnvelop.object = Object.assign({}, instance.getGlobalObject(), instance.getUpdatedValue('object'));
-        telemetryInstance.telemetryEnvelop.tags = Object.assign([], Telemetry.config.tags, instance.getUpdatedValue('tags'));
+        telemetryInstance.telemetryEnvelop.appid = Telemetry.config.appid;
         telemetryInstance.telemetryEnvelop.edata = data;
         return telemetryInstance.telemetryEnvelop;
     }
@@ -428,10 +428,9 @@ var Telemetry = (function() {
         config.rollup && (telemetryInstance._globalContext.rollup = config.rollup);
         config.sid && (telemetryInstance._globalContext.sid = config.sid);
         config.did && (telemetryInstance._globalContext.did = config.did);
+        config.appid && (telemetryInstance._globalContext.appid = config.appid);
         config.cdata && (telemetryInstance._globalContext.cdata = config.cdata);
         config.pdata && (telemetryInstance._globalContext.pdata = config.pdata);
-
-
     }
 
     /**
@@ -513,60 +512,7 @@ var Telemetry = (function() {
             return target;
         }
     }
-    var FPoptions = {
-        audio: {
-            timeout: 1000,
-            // On iOS 11, audio context can only be used in response to user interaction.
-            // We require users to explicitly enable audio fingerprinting on iOS 11.
-            // See https://stackoverflow.com/questions/46363048/onaudioprocess-not-called-on-ios11#46534088
-            excludeIOS11: true
-        },
-        fonts: {
-            swfContainerId: 'fingerprintjs2',
-            swfPath: 'flash/compiled/FontList.swf',
-            userDefinedFonts: [],
-            extendedJsFonts: false
-        },
-        screen: {
-            // To ensure consistent fingerprints when users rotate their mobile devices
-            detectScreenOrientation: true
-        },
-        plugins: {
-            sortPluginsFor: [/palemoon/i],
-            excludeIE: false
-        },
-        extraComponents: [],
-        excludes: {
-            // Unreliable on Windows, see https://github.com/Valve/fingerprintjs2/issues/375
-            'enumerateDevices': true,
-            // devicePixelRatio depends on browser zoom, and it's impossible to detect browser zoom
-            'pixelRatio': true,
-            // DNT depends on incognito mode for some browsers (Chrome) and it's impossible to detect incognito mode
-            'doNotTrack': true,
-            // uses js fonts already
-            'fontsFlash': true,
-            'screenResolution': true,
-            'availableScreenResolution': true
-        },
-        NOT_AVAILABLE: 'not available',
-        ERROR: 'error',
-        EXCLUDED: 'excluded'
-    }
-    this.telemetry.getFingerPrint = function (cb) {
-        const ver = 'v1';
-        if (localStorage && localStorage.getItem(`fpDetails_${ver}`)) {
-            var deviceDetails = JSON.parse(localStorage.getItem(`fpDetails_${ver}`));
-             if (cb) cb(deviceDetails.result, deviceDetails.components, ver);
-          } else {
-            Fingerprint2.getV18(FPoptions, function (result, components) {
-                if (localStorage) {
-                    // fpDetails contains components and deviceId generated from fingerprintJs
-                    localStorage.setItem(`fpDetails_${ver}`, JSON.stringify({result: result, components: components}))
-                }
-            if (cb) cb(result, components, ver)
-            })
-          } 
-    }
+
     if (typeof Object.assign != 'function') {
         instance.objectAssign();
     }
@@ -574,18 +520,6 @@ var Telemetry = (function() {
     return this.telemetry;
 })();
 
-/**
- * Name space which is being fallowed
- * @type {[type]}
- */
-
 EkTelemetry = $t = Telemetry;
 
-
-
-/**
- * To support for the node backEnd, So any node developer can import this telemetry lib.
- */
-if (typeof module != 'undefined') {
-    module.exports = Telemetry;
-}
+module.exports = Telemetry;
