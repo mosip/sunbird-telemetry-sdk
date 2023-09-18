@@ -44,6 +44,9 @@ var TelemetrySyncManager = {
             telemetryObj = {
                 "data": {
                     "id": "api.mosip.telemetry",
+                    "params": {
+                        "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
+                    },
                     "ets": getUTCTime(),
                     "events": telemetryEvents
                 }
