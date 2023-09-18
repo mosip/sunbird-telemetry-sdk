@@ -1,7 +1,7 @@
 {
   "$id": "http://mosip.io/telemetry/log",
   "type": "object",
-  "required": ["eid", "ets", "mid", "tags","edata"],
+  "required": ["eid", "edata"],
   "allOf": [
     {
       "$ref": "http://mosip.io/telemetry/common"
@@ -9,7 +9,7 @@
     {
       "properties": {
         "eid": {
-          "$id": "http://mosip.io/telemetry/eid",
+          "type": "string",
           "enum": ["LOG"]
         },
         "edata": {

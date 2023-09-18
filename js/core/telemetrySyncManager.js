@@ -42,28 +42,27 @@ var TelemetrySyncManager = {
                 return;
             }
             telemetryObj = {
-                "id": "api.sunbird.telemetry",
-                "ver": Telemetry._version,
-                "params": {
-                    "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
-                },
-                "ets": (new Date()).getTime() + ((Telemetry.config.timeDiff*1000) || 0),
-                "events": telemetryEvents
+                "data": {
+                    "id": "api.mosip.telemetry",
+                    "params": {
+                        "msgid": CryptoJS.MD5(JSON.stringify(telemetryEvents)).toString(),
+                    },
+                    "ets": getUTCTime(),
+                    "events": telemetryEvents
+                }
             };
         }
         var headersParam = {};
-        if ('undefined' != typeof Telemetry.config.authtoken)
-            headersParam["Authorization"] = 'Bearer ' + Telemetry.config.authtoken;
+        /* if ('undefined' != typeof Telemetry.config.authtoken)
+            headersParam["Authorization"] = 'Bearer ' + Telemetry.config.authtoken; */
         var fullPath = Telemetry.config.host + Telemetry.config.apislug + Telemetry.config.endpoint;
         headersParam['dataType'] = 'json';
         headersParam["Content-Type"] = "application/json";
-        headersParam['x-app-id'] = Telemetry.config.pdata.id;
-        headersParam['x-device-id'] = Telemetry.fingerPrintId;
-        headersParam['x-channel-id'] = Telemetry.config.channel;
+
         axios.post(
             fullPath,
             JSON.stringify(telemetryObj),
-            {headers: {headersParam}}
+            {headers: headersParam}
         )
         .then((result) => {
             Telemetry.config.telemetryDebugEnabled && console.log("Telemetry API success", result);
@@ -73,9 +72,9 @@ var TelemetrySyncManager = {
                 instance._failedBatch.push(telemetryObj);
             }
             if (error.status == 403) {
-                console.error("Authentication error: ", error);
+                console.error("Authentication error: ", JSON.stringify(error));
             } else {
-                console.log("Error while Telemetry sync to server: ", error);
+                console.log("Error while Telemetry sync to server: ", JSON.stringify(error));
             }
         });
     },

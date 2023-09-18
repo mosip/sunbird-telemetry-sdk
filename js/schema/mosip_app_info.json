@@ -1,0 +1,78 @@
+{
+    "$id": "http://mosip.io/telemetry/appinfo",
+    "type": "object",
+    "required": ["eid", "edata"],
+    "allOf": [
+      {
+        "$ref": "http://mosip.io/telemetry/common"
+      },
+      {
+        "properties": {
+          "eid": {
+            "type": "string",
+            "enum": ["APPINFO"]
+          },
+          "edata": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "env": {
+                "type": "string",
+                "minLength": 1
+              },
+              "injiVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "tuvaliVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "buildNumber": {
+                "type": "string",
+                "minLength": 1
+              },
+              "preferredLanguage": {
+                "type": "string"
+              },
+              "brandName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "modelName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "osName": {
+                "type": "string",
+                "minLength": 1
+              },
+              "osVersion": {
+                "type": "string",
+                "minLength": 1
+              },
+              "osApiLevel": {
+                "type": "string",
+                "minLength": 1
+              },
+              "isHardwareKeystoreSupported": {
+                "type": "boolean",
+                "minLength": 1
+              },
+              "dateTime": {
+                "type": "number",
+                "minLength": 1
+              },
+              "zone": {
+                "type": "string",
+                "minLength": 1
+              },
+              "offset": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }

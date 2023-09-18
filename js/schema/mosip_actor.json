@@ -8,6 +8,5 @@
     "type": {
       "type": "string"
     }
-  },
-  "required": [ "type", "id"]
+  }
 }
