@@ -5,24 +5,24 @@ module.exports = function(grunt) {
         version: '3.2.',
         karma: {
             telemetryV3: {
-                configFile: './test/karma.renderer.config.js',
+                configFile: './js/test/karma.renderer.config.js',
             },
             telemetryFunV3: {
-                configFile: './test/karma.telemetry.fun.config.js',
+                configFile: './js/test/karma.telemetry.fun.config.js',
             }
 
         },
         concat: {
             telemetryLib: {
                 src: [
-                    './libs/ajv.min.js',
-                    './schema/telemetry-spec.js',
-                    './libs/detectClient.js',
-                    './libs/md5.js',
-                    './libs/ua-parser.min.js',
-                    './libs/fingerprint2.min.js',
-                    './core/telemetryV3Interface.js',
-                    './core/telemetrySyncManager.js',
+                    './js/libs/ajv.min.js',
+                    './js/schema/telemetry-spec.js',
+                    './js/libs/detectClient.js',
+                    './js/libs/md5.js',
+                    './js/libs/ua-parser.min.js',
+                    './js/libs/fingerprint2.min.js',
+                    './js/core/telemetryV3Interface.js',
+                    './js/core/telemetrySyncManager.js',
                 ],
                 dest: './index.js'
             }
@@ -33,7 +33,7 @@ module.exports = function(grunt) {
                     mangle: false
                 },
                 files: {
-                    './core/auth-token-generator.min.js': ['./core/auth-token-generator/auth-token-generator.js']
+                    './js/core/auth-token-generator.min.js': ['./js/core/auth-token-generator/auth-token-generator.js']
                 }
             }
         }

@@ -33,10 +33,10 @@
         "codecov": "3.0.4"
     },
     "scripts": {
-        "test": "karma start karma.renderer.config.js",
+        "test": "karma start ./js/karma.renderer.config.js",
         "codecov": "codecov",
         "test-sdk": "grunt renderer-telemetryV3",
-        "build": "node_modules/.bin/rimraf ./dist && gulp build-telemetry-schema && grunt build-telemetry-lib"
+        "prepare": "node_modules/.bin/rimraf ./js/dist && gulp build-telemetry-schema && grunt build-telemetry-lib"
     },
     "repository": {
         "type": "git",
