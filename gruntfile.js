@@ -5,16 +5,17 @@ module.exports = function(grunt) {
         version: '3.2.',
         karma: {
             telemetryV3: {
-                configFile: './test/karma.renderer.config.js',
+                configFile: './js/test/karma.renderer.config.js',
             },
             telemetryFunV3: {
-                configFile: './test/karma.telemetry.fun.config.js',
+                configFile: './js/test/karma.telemetry.fun.config.js',
             }
 
         },
         concat: {
             telemetryLib: {
                 src: [
+                    './js/libs/ajv.min.js',
                     './js/schema/telemetry-spec.js',
                     './js/libs/detectClient.js',
                     './js/libs/md5.js',
