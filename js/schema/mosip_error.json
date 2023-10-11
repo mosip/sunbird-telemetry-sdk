@@ -27,7 +27,7 @@
               "type": "string"
             },
             "stacktrace": {
-              "type": "string"
+              "type": "object"
             },
             "env": {
               "type": "string",
@@ -69,11 +69,11 @@
               "minLength": 1
             },
             "isHardwareKeystoreSupported": {
-              "type": "string",
+              "type": "boolean",
               "minLength": 1
             },
             "dateTime": {
-              "type": "string",
+              "type": "number",
               "minLength": 1
             },
             "zone": {

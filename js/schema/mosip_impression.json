@@ -19,11 +19,14 @@
             "type": {
               "type": "string"
             },
+            "subtype": {
+              "type": "string"
+            },
             "additionalParameters": {
               "type": "object"
             }
           },
-          "required": ["type"]
+          "required": ["type", "subtype"]
         }
       }
     }
