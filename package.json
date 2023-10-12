@@ -1,5 +1,5 @@
 {
-    "name": "@project-sunbird/telemetry-sdk",
+    "name": "telemetry-sdk",
     "version": "0.0.21",
     "description": "Telemetry Service javascript library helps to generate the telemetry events.",
     "directories": {
