@@ -14,13 +14,19 @@
         },
         "edata": {
           "type": "object",
-          "additionalProperties": false,
+          "additionalProperties": true,
           "properties": {
             "type": {
               "type": "string"
+            },
+            "subtype": {
+              "type": "string"
+            },
+            "additionalParameters": {
+              "type": "object"
             }
           },
-          "required": ["type"]
+          "required": ["type", "subtype"]
         }
       }
     }
